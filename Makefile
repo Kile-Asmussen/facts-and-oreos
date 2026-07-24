@@ -24,10 +24,15 @@ download-mlua:
 	git clone https://github.com/mlua-rs/mlua.git mlua
 	rm -rf flua/.git*
 
+download-factorio-tools:
+	git clone https://github.com/MForster/factorio-rust-tools.git ftools
+	rm -rf ftools/.git*
+
 get-factorio-references:
-	cp -r ${FACTORIO}/core ./references
-	cp -r ${FACTORIO}/base ./references
-	cp -r ${FACTORIO}/recycler ./references
-	cp -r ${FACTORIO}/elevated-rails ./references
-	cp -r ${FACTORIO}/space-age ./references
-	cp -r ${FACTORIO}/quality ./references
+	mkdir -p .factorio/vanilla
+	cp -r ${FACTORIO}/core ./.factorio/vanilla
+	cp -r ${FACTORIO}/base ./.factorio/vanilla
+	cp -r ${FACTORIO}/recycler ./.factorio/vanilla
+	cp -r ${FACTORIO}/elevated-rails ./.factorio/vanilla
+	cp -r ${FACTORIO}/space-age ./.factorio/vanilla
+	cp -r ${FACTORIO}/quality ./.factorio/vanilla

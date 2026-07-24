@@ -4,7 +4,9 @@
 /flua
 /mlua
 /api
+/ftools
 /references
+/.factorio/vanilla/
 
 # fishing config files:
 .claude/fishing.bash.local.txt
