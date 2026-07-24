@@ -1,6 +1,9 @@
 /target
 /slop
 /.direnv
+/flua
+/mlua
+/api
 
 # fishing config files:
 .claude/fishing.bash.local.txt

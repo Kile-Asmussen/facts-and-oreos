@@ -1,69 +1,21 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "enabledMcpjsonServers": [
-    "grep-glob"
-  ],
-  "hooks": {
-    "ConfigChange": [
-      {
-        "hooks": [
-          {
-            "command": "fishing config-change",
-            "type": "command"
-          }
-        ],
-        "matcher": "project_settings|local_settings|user_settings"
-      }
-    ],
-    "CwdChanged": [
-      {
-        "hooks": [
-          {
-            "command": "fishing cwd-changed",
-            "type": "command"
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "hooks": [
-          {
-            "command": "fishing pre-tool-use",
-            "type": "command"
-          }
-        ],
-        "matcher": "Bash|Read|WebFetch|Edit|Write"
-      }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "command": "fishing rotate-log",
-            "type": "command"
-          }
-        ]
-      }
-    ]
-  },
   "permissions": {
     "allow": [
+      "Edit(README.md)",
+      "Write(README.md)",
       "Edit(CLAUDE.md)",
       "Write(CLAUDE.md)",
       "Edit(TODO.md)",
       "Write(TODO.md)",
+      "Edit(Cargo.toml)",
       "Edit(slop/**/*)",
       "Write(slop/**/*)",
-      "Edit(*.lua)",
-      "Write(*.lua)",
       "Write(**/*.lua)",
       "Edit(**/*.lua)",
       "Edit(src/**/*.rs)",
       "Write(src/**/*.rs)",
       "Bash",
-      "Glob",
-      "Grep",
       "Read",
       "WebFetch",
       "WebSearch",
@@ -72,13 +24,63 @@
       "mcp__grep-glob__grep",
       "mcp__grep-glob__glob"
     ],
-    "defaultMode": "dontAsk",
     "deny": [
       "Agent",
       "Write(.claude/*)",
       "Edit(.claude/*)",
       "Write(.claude/**/*)",
       "Edit(.claude/**/*)"
+    ],
+    "defaultMode": "dontAsk"
+  },
+  "enabledMcpjsonServers": [
+    "grep-glob"
+  ],
+  "hooks": {
+    "ConfigChange": [
+      {
+        "matcher": "project_settings|local_settings|user_settings",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "fishing config-change"
+          }
+        ]
+      }
+    ],
+    "CwdChanged": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "fishing cwd-changed"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Read|WebFetch|Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "fishing pre-tool-use"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "fishing rotate-log"
+          }
+        ]
+      }
     ]
+  },
+  "enabledPlugins": {
+    "rust-analyzer-lsp@claude-plugins-official": true
   }
 }

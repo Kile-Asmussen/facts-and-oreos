@@ -8,4 +8,6 @@
 # Full URLs are matched, and the * pattern matches any substring, including those containing / .
 #
 # examples:
-https://code.claude.com/docs*
+https://docs.rs*
+https://lua-api.factorio.com*
+https://wiki.factorio.com*

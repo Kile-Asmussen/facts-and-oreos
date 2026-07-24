@@ -56,6 +56,10 @@
               nix-claude-code.packages.x86_64-linux."2.1.112"
               wget
               ripgrep
+              gnumake
+              pandoc
+              parallel
+              jq
             ];
           };
       }
