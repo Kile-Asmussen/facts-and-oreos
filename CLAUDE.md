@@ -1,7 +1,7 @@
 
-# Factorio mod test suite
+# Factorio mod test suite, MCP, and Claude Skill
 
-The 'claude fishing' suite of security hooks are installed, brief description in .claude/fishing.txt, read this before beginning as it contains crucial information about constrains for how to work within this project.
+The 'claude fishing' suite of security hooks are installed, brief description in .claude/fishing.txt, read this before beginning as it contains crucial information about constrains for how to work within this project. Read the associated allow list files, and verify that the grep-glob mcp is available.
 
 This Rust project has the purpose of recreating with fairly high accuracy the data-stage loading pipeline of factorio.
 

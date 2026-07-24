@@ -1,4 +1,6 @@
 
+FACTORIO=~/.steam/steam/steamapps/common/Factorio/data
+
 .PHONY: download-api-json
 
 download-api:
@@ -21,3 +23,11 @@ download-flua:
 download-mlua:
 	git clone https://github.com/mlua-rs/mlua.git mlua
 	rm -rf flua/.git*
+
+get-factorio-references:
+	cp -r ${FACTORIO}/core ./references
+	cp -r ${FACTORIO}/base ./references
+	cp -r ${FACTORIO}/recycler ./references
+	cp -r ${FACTORIO}/elevated-rails ./references
+	cp -r ${FACTORIO}/space-age ./references
+	cp -r ${FACTORIO}/quality ./references

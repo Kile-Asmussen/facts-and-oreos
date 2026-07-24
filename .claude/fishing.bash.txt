@@ -8,5 +8,5 @@
 # To have a pattern match a literal ! as the first character, use a character class: [!]
 #
 # examples:
-echo 'Hello \w+!'
-!\s*rm.*
+cargo build
+cargo test

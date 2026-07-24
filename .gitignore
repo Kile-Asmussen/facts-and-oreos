@@ -4,6 +4,7 @@
 /flua
 /mlua
 /api
+/references
 
 # fishing config files:
 .claude/fishing.bash.local.txt
