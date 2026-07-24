@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "enabledMcpjsonServers": [
+    "grep-glob"
+  ],
+  "hooks": {
+    "ConfigChange": [
+      {
+        "hooks": [
+          {
+            "command": "fishing config-change",
+            "type": "command"
+          }
+        ],
+        "matcher": "project_settings|local_settings|user_settings"
+      }
+    ],
+    "CwdChanged": [
+      {
+        "hooks": [
+          {
+            "command": "fishing cwd-changed",
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "fishing pre-tool-use",
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash|Read|WebFetch|Edit|Write"
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "command": "fishing rotate-log",
+            "type": "command"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Edit(CLAUDE.md)",
+      "Write(CLAUDE.md)",
+      "Edit(TODO.md)",
+      "Write(TODO.md)",
+      "Edit(slop/**/*)",
+      "Write(slop/**/*)",
+      "Edit(*.lua)",
+      "Write(*.lua)",
+      "Write(**/*.lua)",
+      "Edit(**/*.lua)",
+      "Edit(src/**/*.rs)",
+      "Write(src/**/*.rs)",
+      "Bash",
+      "Glob",
+      "Grep",
+      "Read",
+      "WebFetch",
+      "WebSearch",
+      "LSP",
+      "ToolSearch",
+      "mcp__grep-glob__grep",
+      "mcp__grep-glob__glob"
+    ],
+    "defaultMode": "dontAsk",
+    "deny": [
+      "Agent",
+      "Write(.claude/*)",
+      "Edit(.claude/*)",
+      "Write(.claude/**/*)",
+      "Edit(.claude/**/*)"
+    ]
+  }
+}

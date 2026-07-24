@@ -1,0 +1,22 @@
+# Fishing - Hooks for Claude
+
+This project uses the 'fishing' hooks suite to enforce safety policies on your actions.
+
+PreToolUse hooks enforce allowlists:
+- Bash tool: .claude/fishing.bash.txt
+- Read tool: .claude/fishing.paths.txt
+- WebFetch tool: .claude/fishing.webfetch.txt
+- Write/Edit: uses the patterns from permissions.allow in .claude/settings.json
+
+All Writes/Edits to .claude/ is blocked: if an update to one of the allow lists is needed, ask the user.
+
+Bash tool is restricted, often ls and grep are not available.
+
+An MCP, 'grep-glob' replaces them:
+- mcp__grep-glob__grep replaces the use of grep/ripgrep/rg commands.
+- mcp__grep-glob__glob replaces the use of ls/find commands.
+
+Hidden directories ( names starting with . ) are skipped by default. The file fishing.glob-exclude.txt contains additional skipped directories.
+
+When a hook denies an action, the denial reason explains what is allowed and the pattern syntax.
+When an MCP tool call fails due to a policy violation, the error message explains what is allowed and the pattern syntax.

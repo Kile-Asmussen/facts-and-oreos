@@ -1,0 +1,18 @@
+{
+    "words": [
+        "env",
+        "flbox",
+        "flboxes",
+        "fns",
+        "fnslib",
+        "funclib",
+        "localised",
+        "mcp",
+        "num",
+        "tbl"
+    ],
+    "ignorePaths": [
+        "flake.nix",
+        "flake.lock"
+    ]
+}

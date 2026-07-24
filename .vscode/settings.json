@@ -1,0 +1,23 @@
+{
+    "emmylua.ls.executablePath": "emmylua_ls",
+    "emmylua.semanticTokens.renderDocumentationMarkup": true,
+    "[lua]": {
+        "files.autoSave": "afterDelay",
+        "files.autoSaveDelay": 1000,
+        "editor.defaultFormatter": "tangzx.emmylua"
+    },
+    "files.associations": {
+        "*.cfg": "plaintext"
+    },
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.expand": false,
+    "explorer.fileNesting.patterns": {
+        "*.lua": "${capture}-updates.lua, ${capture}-final-fixes.lua",
+        ".envrc": "flake.nix, flake.lock",
+        "README.md": "CLAUDE.md, LICENSE",
+        "*.json": "${capture}.*.json",
+        "*": "${capture}~",
+        "fishing.txt": "fishing.*.txt, fishing.log"
+    },
+    "explorer.sortOrder": "mixed",
+}
