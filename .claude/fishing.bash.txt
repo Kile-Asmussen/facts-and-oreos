@@ -10,3 +10,5 @@
 # examples:
 cargo build
 cargo test
+cargo update
+cargo update --breaking

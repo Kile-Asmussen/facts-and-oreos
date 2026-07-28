@@ -1,2 +1,2 @@
 [files]
-exclude = ["ftools/", "mlua/"]
+respect-ignore-files = true

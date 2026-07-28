@@ -10,6 +10,8 @@
 # examples:
 https://docs.rs
 https://docs.rs/*
+https://doc.rust-lang.org
+https://doc.rust-lang.org/*
 https://lua-api.factorio.com
 https://lua-api.factorio.com/*
 https://wiki.factorio.com
