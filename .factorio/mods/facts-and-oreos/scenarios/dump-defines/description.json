@@ -1,0 +1,4 @@
+{
+  "name": "dump-defines",
+  "description": "Dumps the defines table to script-output/defines.json on_init."
+}

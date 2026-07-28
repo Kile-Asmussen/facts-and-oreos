@@ -1,0 +1,8 @@
+{
+  "name": "facts-and-oreos",
+  "version": "0.0.1",
+  "title": "Facts and Oreos",
+  "author": "facts-and-oreos",
+  "factorio_version": "2.0",
+  "dependencies": ["base"]
+}

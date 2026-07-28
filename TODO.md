@@ -3,22 +3,20 @@
 The purpose is to provide a fast sanity check system for factorio mod development.
 
 The structure of the project will be a core rust library containing several binaries.
-
 Consider design options of each subgoal in dialogue with user and fill out a comprehensive to-do list of each subgoal.
 
 ## Subgoal A: Factorio mod api integration
 
-Make or find a suitable factorio mod api integration.
+Implemented in `mod-api/` crate. Reimplemented from scratch rather than depending on the aging `factorio-mod-api` crate.
 
-Of interest, investigate whether factorio_mod_api is of use, available on https://docs.rs/factorio-mod-api/latest/factorio_mod_api/ also available for inspection in ./reference/ftools/ directory.
+- [x] A1. Dependencies: `rootcause`, `reqwest` (json+stream+query), `serde`+`serde_json`, `semver`, `tokio`
+- [x] A2. `ModInfo` — full local `info.json` struct (name, version, title, author, contact, homepage, description, factorio_version, dependencies)
+- [x] A3. `ModDependency` parser — all five flavors (normal, !, ?, (?), ~) with optional semver comparator; roundtrip Display
+- [x] A4. `modlist.json` types — `ModListEntry { name, enabled }`; `ModSpec` / `ModRelease` for portal responses
+- [x] A5. `ModPortalClient` — `get_mod_spec`, `login`, `download_mod` against mods.factorio.com / auth.factorio.com
+- [x] A6. Credential store (`credentials` module) — load/save `ApiToken` to XDG config dir at mode 0o600; no `Debug` impl on `ApiToken`
 
-Wiki page with details: https://wiki.factorio.com/Mod_portal_API
-
-NOTE: Includes credential handling, which needs to be guarded against leaking through Claude accidentally reading the file using the fishing hooks.
-
-CONSIDER: project-local mods caching vs using the factorio mods directory ~/.factorio/mods/
-
-- TODO list for this subgoal goes here
+NOTE: `ApiToken` has no `Debug` impl to prevent accidental logging. Credentials stored at `$XDG_CONFIG_HOME/facts-and-oreos/credentials.json` — fishing hooks should deny-read this path.
 
 ## Subgoal B: Implement Factorio mod downloader
 
@@ -26,17 +24,34 @@ Make a tool that takes a set of mods referenced by name and optionally version, 
 
 This should include a utility for updating a modlist.json file, same as the game.
 
-- TODO list for this subgoal goes here
+Implemented in `src/downloader.rs` as a library; exposed via CLI in `src/main.rs`.
+
+- [x] B1. Mod version resolver: greedy latest-compatible, walks transitive required deps, checks incompatibility constraints
+- [x] B2. Download pipeline: checks cache (by filename + sha1) before downloading; verifies sha1 after download
+- [x] B3. Mods directory: `.factorio/mods/` relative to project root (`Name_Version.zip` layout); project-local, not XDG
+- [x] B4. `modlist.json` read/write: merge resolved mods in, enable them, preserve existing user entries
+- [x] B5. CLI: `facts-and-oreos fetch <mod>...` and `facts-and-oreos login <username>` (password read with echo-off)
 
 ## Subgoal C: A suite of tools to invoke factorio in headless mode
 
-Make a tool for running factorio in headless mode with a select set of mods, for several purposes: first and foremost actually running the real game to test the mod for real.
+Implemented in `src/invoker.rs` + `src/mod_settings.rs`. Uses a fully isolated temp dir with a generated `config.ini` and `mod-settings.dat` so the user's real Factorio installation is never touched.
 
-Apart from that, it will be useful for dumping the data.raw JSON for that set of mods, checking generated logs/stdout printout to help diagnose errors, and extracting internally available values from the Factorio Lua engine (such as defines detailed ./reference/api/defines.txt) by running empty-world scenarios for 1 tick with tiny mods installed that use an on_init event hook to dump data.
+- [x] C1. `FactorioInvoker`: binary from `FACTORIO_BIN` env; `read-data` auto-detected from binary path
+- [x] C2. Config generation: writes isolated `config.ini` (read-data → Factorio install, write-data → temp dir)
+- [x] C3. `mod-settings.dat` codec: full PropertyTree binary format, bit-identical roundtrip verified against reference file; generates minimal empty settings for each run
+- [x] C4. `facts-and-oreos` mod at `.factorio/mods/facts-and-oreos/`: `info.json`, `scenarios/empty/` (headless bootstrap), `scenarios/dump-defines/` (on_init defines dump)
+- [x] C5. `run_headless(save: Option<&Path>, mods_dir, until_tick)`: `--load-scenario facts-and-oreos/empty` or `--load-game <path>`; returns structured `RunOutput` with parsed errors/warnings
+- [x] C6. `dump_data(mods_dir)`: `--dump-data`; moves result to `.factorio/mods/data-raw-dump.json`
+- [x] C7. `dump_defines(mods_dir)`: runs dump-defines scenario; moves result to `.factorio/mods/defines.json`
+- [x] C8. CLI: `run [save]`, `dump-data`, `dump-defines`
 
-NOTE: this tool will need to edit the already installed list of mods, and so must take care to restore the mods that the user has already installed after each invocation. Alternatively investigate using docker to compartmentalize the headless factorio invocation.
+NOTE: `find_binary_from_project` (reading `.factorio/project.toml`) is stubbed — only `FACTORIO_BIN` env var works currently.
 
-- TODO list for this subgoal goes here
+NOTE: To speed up scenario loading, it may be beneficial to supply custom map generation settings (via `--map-gen-settings`) that produce the most minimal possible world — e.g. no resources, no enemies, smallest map size. This would reduce world generation time significantly for the empty and dump-defines scenarios.
+
+NOTE: Consider adding a CLI command to launch Factorio for ordinary (non-headless) play against the project's mod set, to aid the mod developer in testing their work interactively without needing to manage Factorio's own mod directory.
+
+NOTE: Investigate using Factorio's replay system as a basis for automated testing in mod development workflows — a replay encodes all player actions deterministically, which could allow replaying against modified mod code and checking for divergence or errors.
 
 ## Subgoal D: Create mlua integration with Factorio Lua
  
@@ -57,11 +72,11 @@ Summary of approach:
 - Use upstream mlua (crates.io) with lua52 non-vendored feature, pointed at our flua-src static lib via env vars
 
 - [x] D1. Confirmed: override_printf.h never included by .c files; trio not a build dependency
-- [ ] D2. Create flua-src/ crate with Build/Artifacts API; add flua git submodule; guard against empty submodule
-- [ ] D3. Create facts-mlua-sys/ crate: lua52 FFI base + FLua extension symbols + build.rs linking flua-src
-- [ ] D4. Validate upstream mlua lua52 works linked against our flua static lib; fork only if needed
-- [ ] D5. Smoke-test: open FLua state, run Lua, call lua_getlfield via FFI
-- [ ] D6. Design and implement custom Lua require() loader for Factorio mod path resolution
+- [x] D2. `flua-src/` crate with Build/Artifacts API; flua git submodule at `flua-src/flua/`; submodule guard in build.rs
+- [x] D3. `flua-mlua-sys/` crate: lua52 FFI base + FLua extension symbols (lua_getlfield/setlfield etc.) + build.rs
+- [x] D4. mlua 0.12 integration via `mlua-sys-shim` patch: shim re-exports flua-mlua-sys, version pinned to 0.11.0; three missing constants (LUA_MAX_UPVALUES, LUA_TRACEBACK_STACK, SYS_MIN_ALIGN) added to flua-mlua-sys
+- [x] D5. Smoke-test: open FLua state, run 1+1, call lua_getlfield, verify tostring(2^10)
+- [x] D6. Moved to Subgoal I: custom require() loader via mlua high-level API alongside pipeline setup
 
 ## Subgoal E: Replicate LuaHelpers
 
@@ -149,3 +164,16 @@ https://docs.rs/jaq-core/latest/jaq_core/
 A skill giving descriptions for how to mod Factorio using this tool suite, as well as the Emmylua LSP as a plugin.
 
 - TODO list for this subgoal goes here
+
+
+# Manual field testing
+
+## Subgoal C: headless invoker
+
+The headless invoker outputs are complex enough that fully automated verification of correctness is impractical; instead, the following should be tested manually when modifying invoker or scenario code:
+
+- `facts-and-oreos run`: loads the empty scenario, exits cleanly, no errors reported
+- `facts-and-oreos dump-data`: produces a non-empty `data-raw-dump.json` in `.factorio/mods/`
+- `facts-and-oreos dump-defines`: produces a non-empty `defines.json` in `.factorio/mods/`; verify it contains top-level keys like `"defines"`
+- Verify that the isolated temp environment does not write anything into the user's real Factorio `write-data` directory
+- Verify that after a run, the temp dir is cleaned up (currently it is not — consider adding cleanup)

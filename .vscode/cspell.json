@@ -1,15 +1,18 @@
 {
     "words": [
+        "Cli",
         "direnv",
         "Emmylua",
         "env",
         "flbox",
         "flboxes",
         "flua",
+        "fmt",
         "fns",
         "fnslib",
         "ftools",
         "funclib",
+        "lflag",
         "localised",
         "LSP",
         "lualib",
@@ -17,7 +20,10 @@
         "mlua",
         "num",
         "oreos",
-        "tbl"
+        "tbl",
+        "tcgetattr",
+        "TCSANOW",
+        "tcsetattr"
     ],
     "ignoreWords": [
         "Mcpjson"

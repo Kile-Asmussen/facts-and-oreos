@@ -22,6 +22,11 @@
       "Edit(src/**/*.rs)",
       "Write(src/**/*.rs)",
 
+      "Edit(mod-api/**/*.toml)",
+      "Write(mod-api/**/*.toml)",
+      "Edit(mod-api/**/*.rs)",
+      "Write(mod-api/**/*.rs)",
+
       "Edit(flua-src/**/*.toml)",
       "Write(flua-src/**/*.toml)",
       "Edit(flua-src/**/*.rs)",
@@ -36,6 +41,9 @@
       "Write(mlua-sys-shim/**/*.toml)",
       "Edit(mlua-sys-shim/**/*.rs)",
       "Write(mlua-sys-shim/**/*.rs)",
+
+      "Edit(.factorio/**)",
+      "Write(.factorio/**)",
 
       "Bash",
       "Read",

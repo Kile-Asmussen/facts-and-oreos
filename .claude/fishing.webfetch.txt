@@ -16,5 +16,7 @@ https://lua-api.factorio.com
 https://lua-api.factorio.com/*
 https://wiki.factorio.com
 https://wiki.factorio.com/*
+https://forums.factorio.com
+https://forums.factorio.com/*
 https://www.foundrygg.com
 https://www.foundrygg.com/*
