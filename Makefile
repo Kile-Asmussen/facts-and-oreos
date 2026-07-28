@@ -1,10 +1,19 @@
 
 FACTORIO=~/.steam/steam/steamapps/common/Factorio/data
 
-.PHONY: download-api-json
+.PHONY: all clean submodules
 
-download-api:
-	mkdir -p api
+all: ./reference/api ./reference/flua ./reference/mlua ./reference/ftools ./reference/trio ./reference/flua-src-rs ./.factorio/vanilla
+
+submodules:
+	git submodule add https://github.com/Rseding91/Factorio-Lua.git flua-src/flua
+	git submodule update --recursive
+
+clean:
+	rm -rf ./.factorio/vanilla ./reference
+
+./reference/api:
+	mkdir -p ./reference/api
 	wget -O api/archive.zip https://lua-api.factorio.com/latest/static/archive.zip
 	unzip api/archive.zip -d api
 	find api/files -type f -name '*.html' -print0 | parallel -q -0 -j8 pandoc -w plain {} -o {.}.txt >/dev/null
@@ -16,19 +25,23 @@ download-api:
 	rmdir api/files
 	rm api/archive.zip
 
-download-flua:
-	git clone https://github.com/Rseding91/Factorio-Lua.git flua
-	rm -rf flua/.git*
+./reference/flua:
+	mkdir -p ./reference/flua
+	git clone https://github.com/Rseding91/Factorio-Lua.git ./reference/flua
 
-download-mlua:
-	git clone https://github.com/mlua-rs/mlua.git mlua
-	rm -rf flua/.git*
+./reference/mlua:
+	mkdir -p ./reference/mlua
+	git clone https://github.com/mlua-rs/mlua.git ./reference/mlua
 
-download-factorio-tools:
-	git clone https://github.com/MForster/factorio-rust-tools.git ftools
-	rm -rf ftools/.git*
+./reference/ftools:
+	mkdir -p ./reference/ftools
+	git clone https://github.com/MForster/factorio-rust-tools.git ./reference/ftools
 
-get-factorio-references:
+./reference/flua-src-rs:
+	mkdir -p ./reference/flua-src-rs
+	git clone https://github.com/fgardt/flua-src-rs ./reference/flua-src-rs
+
+./reference/.factorio/vanilla:
 	mkdir -p .factorio/vanilla
 	cp -r ${FACTORIO}/core ./.factorio/vanilla
 	cp -r ${FACTORIO}/base ./.factorio/vanilla

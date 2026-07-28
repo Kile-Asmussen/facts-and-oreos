@@ -1,12 +1,8 @@
 /target
 /slop
 /.direnv
-/flua
-/mlua
-/api
-/ftools
-/references
 /.factorio/vanilla/
+/reference
 
 # fishing config files:
 .claude/fishing.bash.local.txt

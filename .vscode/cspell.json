@@ -1,5 +1,6 @@
 {
     "words": [
+        "direnv",
         "Emmylua",
         "env",
         "flbox",
@@ -15,7 +16,11 @@
         "mcp",
         "mlua",
         "num",
+        "oreos",
         "tbl"
+    ],
+    "ignoreWords": [
+        "Mcpjson"
     ],
     "ignorePaths": [
         "flake.nix",

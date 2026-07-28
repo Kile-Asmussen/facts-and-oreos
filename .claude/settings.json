@@ -8,13 +8,35 @@
       "Write(CLAUDE.md)",
       "Edit(TODO.md)",
       "Write(TODO.md)",
-      "Edit(Cargo.toml)",
+
       "Edit(slop/**/*)",
       "Write(slop/**/*)",
+
       "Write(**/*.lua)",
       "Edit(**/*.lua)",
+      
+      "Edit(.cargo/config.toml)",
+      "Write(.cargo/config.toml)",
+      "Edit(Cargo.toml)",
+      "Write(Cargo.toml)",
       "Edit(src/**/*.rs)",
       "Write(src/**/*.rs)",
+
+      "Edit(flua-src/**/*.toml)",
+      "Write(flua-src/**/*.toml)",
+      "Edit(flua-src/**/*.rs)",
+      "Write(flua-src/**/*.rs)",
+
+      "Edit(flua-mlua-sys/**/*.toml)",
+      "Write(flua-mlua-sys/**/*.toml)",
+      "Edit(flua-mlua-sys/**/*.rs)",
+      "Write(flua-mlua-sys/**/*.rs)",
+
+      "Edit(mlua-sys-shim/**/*.toml)",
+      "Write(mlua-sys-shim/**/*.toml)",
+      "Edit(mlua-sys-shim/**/*.rs)",
+      "Write(mlua-sys-shim/**/*.rs)",
+
       "Bash",
       "Read",
       "WebFetch",

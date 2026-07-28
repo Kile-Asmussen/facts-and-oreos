@@ -10,7 +10,7 @@ Consider design options of each subgoal in dialogue with user and fill out a com
 
 Make or find a suitable factorio mod api integration.
 
-Of interest, investigate whether factorio_mod_api is of use, available on https://docs.rs/factorio-mod-api/latest/factorio_mod_api/ also available for inspection in ./ftools/ directory.
+Of interest, investigate whether factorio_mod_api is of use, available on https://docs.rs/factorio-mod-api/latest/factorio_mod_api/ also available for inspection in ./reference/ftools/ directory.
 
 Wiki page with details: https://wiki.factorio.com/Mod_portal_API
 
@@ -32,7 +32,7 @@ This should include a utility for updating a modlist.json file, same as the game
 
 Make a tool for running factorio in headless mode with a select set of mods, for several purposes: first and foremost actually running the real game to test the mod for real.
 
-Apart from that, it will be useful for dumping the data.raw JSON for that set of mods, checking generated logs/stdout printout to help diagnose errors, and extracting internally available values from the Factorio Lua engine (such as defines detailed ./api/defines.txt) by running empty-world scenarios for 1 tick with tiny mods installed that use an on_init event hook to dump data.
+Apart from that, it will be useful for dumping the data.raw JSON for that set of mods, checking generated logs/stdout printout to help diagnose errors, and extracting internally available values from the Factorio Lua engine (such as defines detailed ./reference/api/defines.txt) by running empty-world scenarios for 1 tick with tiny mods installed that use an on_init event hook to dump data.
 
 NOTE: this tool will need to edit the already installed list of mods, and so must take care to restore the mods that the user has already installed after each invocation. Alternatively investigate using docker to compartmentalize the headless factorio invocation.
 
@@ -40,23 +40,38 @@ NOTE: this tool will need to edit the already installed list of mods, and so mus
 
 ## Subgoal D: Create mlua integration with Factorio Lua
  
-Add Factorio Lua as an accessible implementation of lua in the mlua library. This includes some kind of compilation strategy for compiling the flua implementation. Check ./flua/ for the code.
+Add Factorio Lua as an accessible implementation of lua in the mlua library. This includes some kind of compilation strategy for compiling the flua implementation. Check ./reference/flua/ for the code.
 
-Make sure that there is compliance with the descriptions of functionality in available as plain text in ./api/auxiliary/libraries.txt as well as the 'determinism' requirement posited by Factorio's design (though not quite as important for a simple checking tool). This should already be given in the flua implementation itself.
+Make sure that there is compliance with the descriptions of functionality in available as plain text in ./reference/api/auxiliary/libraries.txt as well as the 'determinism' requirement posited by Factorio's design (though not quite as important for a simple checking tool). This should already be given in the flua implementation itself.
 
 NOTE: the require function in Factorio allows mods to load data out of core/lualib as well as files local to the mod, and from other mods using __modname__.luafile
 
-- TODO list for this subgoal goes here
+Full plan with compilation strategy analysis: ./slop/subgoal-d-plan.md
+
+Summary of approach:
+- FLua is Lua 5.2.1 + Factorio extensions (custom_pow, lua_getlfield/setlfield, lua_pushunsigned, etc.), compiled as C++
+- FLua managed as a git submodule (reproducible, updatable); build.rs guards against forgotten submodule init
+- NOTE: override_printf.h appears to depend on trio but is never included by any .c file -- dead code, not a build concern
+- Re-implement flua-src-rs in-tree as flua-src/ crate (tiny, ~200 lines, no external dep needed)
+- facts-mlua-sys/ crate: mlua-sys lua52 FFI + FLua-only extension symbols, links against flua-src output
+- Use upstream mlua (crates.io) with lua52 non-vendored feature, pointed at our flua-src static lib via env vars
+
+- [x] D1. Confirmed: override_printf.h never included by .c files; trio not a build dependency
+- [ ] D2. Create flua-src/ crate with Build/Artifacts API; add flua git submodule; guard against empty submodule
+- [ ] D3. Create facts-mlua-sys/ crate: lua52 FFI base + FLua extension symbols + build.rs linking flua-src
+- [ ] D4. Validate upstream mlua lua52 works linked against our flua static lib; fork only if needed
+- [ ] D5. Smoke-test: open FLua state, run Lua, call lua_getlfield via FFI
+- [ ] D6. Design and implement custom Lua require() loader for Factorio mod path resolution
 
 ## Subgoal E: Replicate LuaHelpers
 
-LuaHelpers is a library available at the mod loading stage, and so needs to be made available to the code. Check ./api/classes/LuaHelpers.txt for information.
+LuaHelpers is a library available at the mod loading stage, and so needs to be made available to the code. Check ./reference/api/classes/LuaHelpers.txt for information.
 
 - TODO list for this subgoal goes here
 
 ## Subgoal F: Code generation for implementing Factorio's prototypes
 
-The entirety of Factorio's Prototype documentation is available in machine readable format, and code can therefore be generated for it. ./api/prototypes-api.json and ./api/runtime-api.json
+The entirety of Factorio's Prototype documentation is available in machine readable format, and code can therefore be generated for it. ./reference/api/prototypes-api.json and ./reference/api/runtime-api.json
 
 Of particular interest: Serde-integrated Rust type definitions (in build.rs), and Lua annotations for the EmmyLua LSP (as an invoked tool).
 
@@ -85,6 +100,11 @@ https://wiki.factorio.com/Tutorial:Localisation#Default_Behavior(s)_for_finding_
 Once mod loading begins, several global Lua variables are defined in the factorio mod loading pipeline, which is available for inspection by each mod. The mods will have to be ordered in terms of their prerequisites, and loaded in a deterministic ordering scheme, as well as checking for cycling dependencies, etc.
 
 NOTE: Determine how Factorio does the ordering of non-dependent mods, and replicate that if possible.
+
+NOTE: Custom require() loader belongs here. Implement via mlua high-level API (create_function + closure capturing pipeline state, insert into package.searchers). Path conventions:
+- mod-local: require("myfile") → <modname>/myfile.lua
+- core lualib: require("util") → core/lualib/util.lua
+- cross-mod: require("__othermod__.file") → othermod/file.lua
 
 - TODO list for this subgoal goes here
 

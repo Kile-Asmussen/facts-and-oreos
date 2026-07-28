@@ -60,6 +60,7 @@
               pandoc
               parallel
               jq
+              lua
             ];
           };
       }

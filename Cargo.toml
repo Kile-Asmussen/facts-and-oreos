@@ -1,6 +1,20 @@
+[workspace]
+members = [
+    ".",
+    "flua-src",
+    "flua-mlua-sys",
+    "mlua-sys-shim",
+]
+resolver = "2"
+
+[patch.crates-io]
+mlua-sys = { path = "mlua-sys-shim" }
+
 [package]
 name = "facts-and-oreos"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+flua-mlua-sys = { path = "flua-mlua-sys" }
+mlua = { version = "0.12", features = ["lua52"] }

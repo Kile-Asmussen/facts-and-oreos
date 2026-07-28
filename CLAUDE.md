@@ -9,16 +9,16 @@ This Rust project has the purpose of recreating with fairly high accuracy the se
 
 Four reference directories are provided:
 
-./api/ contains a replica of the Factorio mods api documentation, with html files turned into txt to save on tokens when read.
+./reference/api/ contains a replica of the Factorio mods api documentation, with html files turned into txt to save on tokens when read.
 
-./mlua/ contains the source code of the mlua Rust library, which provides lua integration in Rust:
+./reference/mlua/ contains the source code of the mlua Rust library, which provides lua integration in Rust:
 https://docs.rs/mlua/latest/mlua/
 
-./ftools/ which contains the source code of the factorio-rust-tools project:
+./reference/ftools/ which contains the source code of the factorio-rust-tools project:
 https://docs.rs/factorio-exporter/0.9.0/factorio_exporter/
 https://docs.rs/factorio-mod-api/0.3.0/factorio_mod_api/
 
-./flua/ which contains the source code of the modified Lua 5.2 runtime that Factorio uses
+./reference/flua/ which contains the source code of the modified Lua 5.2 runtime that Factorio uses
 
 ./.factorio/vanilla/ which contains the five 'mods' provided for the vanilla experience of Factorio.
 
