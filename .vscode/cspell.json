@@ -1,5 +1,6 @@
 {
     "words": [
+        "Emmylua",
         "env",
         "flbox",
         "flboxes",
@@ -9,6 +10,7 @@
         "ftools",
         "funclib",
         "localised",
+        "LSP",
         "lualib",
         "mcp",
         "mlua",

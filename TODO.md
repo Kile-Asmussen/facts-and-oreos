@@ -115,3 +115,17 @@ The purpose of this tool is to be invoked within a development directory of a mo
 This includes usage guides, sensible choice of caching directories, etc.
 
 - TODO list for this subgoal goes here
+
+## Subgoal M: MCP for inspecting JSON dumps of data.raw
+
+The purpose of this MCP is to assist an LLVM in working with Factorio prototypes. The simplest solution is using JQ scripts for the investigation through the jaq rust library:
+
+https://docs.rs/jaq-core/latest/jaq_core/
+
+- TODO list for this subgoal goes here
+
+## Subgoal N: Claude Skill for Factorio modding
+
+A skill giving descriptions for how to mod Factorio using this tool suite, as well as the Emmylua LSP as a plugin.
+
+- TODO list for this subgoal goes here
