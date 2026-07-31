@@ -168,6 +168,7 @@ Of particular interest: Serde-integrated Rust type definitions, and Lua annotati
 - [ ] F5. `codegen/lua_annot.rs`: emit EmmyLua annotation files for LSP — delayed until needed
 - [x] F6. `fetch.rs`: download prototype-api.json from lua-api.factorio.com to target/; `main.rs` deprecated to manual-testing only
 - [x] F7. `build.rs` in main crate: skip-if-exists logic, optional `regenerate` feature
+- [x] F8. `src/prototypes.rs`: `include!(OUT_DIR/prototypes.rs)` wrapper, `pub use generated::*`; compiles cleanly in main crate
 
 ## Subgoal G: Verification of integrity of prototypes
 
