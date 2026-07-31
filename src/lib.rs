@@ -1,4 +1,5 @@
 pub mod check_token;
+pub mod prototypes;
 pub mod config;
 pub mod downloader;
 pub mod helper_mod;
@@ -8,8 +9,8 @@ pub mod profile;
 
 #[cfg(test)]
 mod tests {
+    use flua_mlua_sys::lua52::{lauxlib, lua, lualib};
     use std::ffi::CStr;
-    use flua_mlua_sys::lua52::{lauxlib, lualib, lua};
 
     #[test]
     fn d5_smoke_test() {
@@ -30,7 +31,11 @@ mod tests {
             lua::lua_pushglobaltable(l);
             let key = c"math";
             lua::lua_getlfield(l, -1, key.as_ptr(), key.to_bytes().len());
-            assert_eq!(lua::lua_type(l, -1), lua::LUA_TTABLE, "math global should be a table");
+            assert_eq!(
+                lua::lua_type(l, -1),
+                lua::LUA_TTABLE,
+                "math global should be a table"
+            );
             lua::lua_pop(l, 2);
 
             let code = c"return tostring(2^10)";

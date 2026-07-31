@@ -1,0 +1,22 @@
+[package]
+name = "factorio-mod-api-codegen"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "factorio-mod-api-codegen"
+path = "src/main.rs"
+
+[lib]
+name = "factorio_mod_api_codegen"
+path = "src/lib.rs"
+
+[dependencies]
+factorio-mod-api-codegen-derive = { path = "../factorio-mod-api-codegen-derive" }
+prettyplease = "0.3.0"
+proc-macro2 = "1.0.107"
+quote = "1.0.47"
+reqwest = { version = "0.12", default-features = false, features = ["blocking", "rustls-tls"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+syn = { version = "3.0.3", features = ["full"] }

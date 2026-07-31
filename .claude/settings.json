@@ -19,6 +19,8 @@
       "Write(.cargo/config.toml)",
       "Edit(Cargo.toml)",
       "Write(Cargo.toml)",
+      "Edit(build.rs)",
+      "Write(build.rs)",
       "Edit(src/**/*.rs)",
       "Write(src/**/*.rs)",
 
@@ -41,6 +43,16 @@
       "Write(mlua-sys-shim/**/*.toml)",
       "Edit(mlua-sys-shim/**/*.rs)",
       "Write(mlua-sys-shim/**/*.rs)",
+
+      "Edit(factorio-mod-api-codegen/**/*.toml)",
+      "Write(factorio-mod-api-codegen/**/*.toml)",
+      "Edit(factorio-mod-api-codegen/**/*.rs)",
+      "Write(factorio-mod-api-codegen/**/*.rs)",
+
+      "Edit(factorio-mod-api-codegen-derive/**/*.toml)",
+      "Write(factorio-mod-api-codegen-derive/**/*.toml)",
+      "Edit(factorio-mod-api-codegen-derive/**/*.rs)",
+      "Write(factorio-mod-api-codegen-derive/**/*.rs)",
 
       "Edit(.factorio/**)",
       "Write(.factorio/**)",

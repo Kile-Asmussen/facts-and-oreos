@@ -121,11 +121,53 @@ LuaHelpers is a library available at the mod loading stage, and so needs to be m
 
 ## Subgoal F: Code generation for implementing Factorio's prototypes
 
-The entirety of Factorio's Prototype documentation is available in machine readable format, and code can therefore be generated for it. ./reference/api/prototypes-api.json and ./reference/api/runtime-api.json
+The entirety of Factorio's Prototype documentation is available in machine readable format, and code can therefore be generated for it. ./reference/api/prototype-api.json and ./reference/api/runtime-api.json
 
-Of particular interest: Serde-integrated Rust type definitions (in build.rs), and Lua annotations for the EmmyLua LSP (as an invoked tool).
+Of particular interest: Serde-integrated Rust type definitions, and Lua annotations for the EmmyLua LSP.
 
-- TODO list for this subgoal goes here
+### Design decisions
+
+- Single `factorio-mod-api-codegen/` subcrate: contains both the Serde model of the
+  JSON format (`src/model.rs`) and the code generation logic (`src/gen/`). No reason
+  to split — nothing else needs the model types independently.
+- Exposed as a library + thin `src/main.rs` binary (`cargo run -p factorio-mod-api-codegen`).
+- Generated files are committed to the repo (greppable, reviewable, no build-time JSON needed).
+- `build.rs` in the main crate: checks if generated files exist; skips if so. Regeneration
+  triggered by deleting the files or a `--features regenerate` flag. Fresh checkouts
+  and CI use committed files without running codegen.
+
+### JSON model (prototype-api.json structure)
+
+- Top level: `prototypes` (279), `types` (705), `defines` (62)
+- All share `BasicMember`: name, order, description, lists?, examples?, images?
+- `Prototype`: parent?, abstract, typename?, properties[]
+- `Type/Concept`: parent?, abstract, inline, type: Type, properties[]?
+- `Define`: values[]?, subkeys[]? (recursive)
+- `Property`: name, type: Type, optional, override, alt_name?, default?, visibility?
+- `Type` field is either a plain string (named type) or an object with `complex_type`:
+  - `array` → value: Type
+  - `dictionary` → key: Type, value: Type
+  - `tuple` → values: [Type]
+  - `union` → options: [Type], full_format: bool
+  - `literal` → value: string|number|bool, description?
+  - `type` → value: Type, description (wrapper with attached description)
+  - `struct` → no extra fields (properties live on the parent API member)
+- Serde strategy: `#[serde(untagged)]` enum — string variant first, then object
+  discriminated by `complex_type` string field.
+- `literal` value needs its own untagged enum: `LiteralValue::Str/Num/Bool`
+- Unions with mixed struct+named options (e.g. `Animation4Way`) → Rust enum with
+  struct-like and newtype variants.
+- Inheritance → `#[serde(flatten)]` on parent fields, or flatten at codegen time.
+
+### Tasks
+
+- [x] F1. `factorio-mod-api-codegen` subcrate scaffolding (Cargo.toml, lib.rs, main.rs)
+- [x] F2. `model.rs`: Serde types for prototype-api.json (Type enum, Property, Prototype, Define, etc.)
+- [x] F3. `codegen/rust.rs`: emit Rust structs/enums for prototypes and types
+- [ ] F4. `codegen/defines.rs`: emit Rust enums for defines (recursive subkeys) — delayed until needed
+- [ ] F5. `codegen/lua_annot.rs`: emit EmmyLua annotation files for LSP — delayed until needed
+- [x] F6. `fetch.rs`: download prototype-api.json from lua-api.factorio.com to target/; `main.rs` deprecated to manual-testing only
+- [x] F7. `build.rs` in main crate: skip-if-exists logic, optional `regenerate` feature
 
 ## Subgoal G: Verification of integrity of prototypes
 

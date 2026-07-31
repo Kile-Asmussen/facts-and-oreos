@@ -3,6 +3,8 @@
 /.factorio/vanilla/
 /reference
 
+/slop/*.jq
+
 # fishing config files:
 .claude/fishing.bash.local.txt
 .claude/fishing.paths.local.txt

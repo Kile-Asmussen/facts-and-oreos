@@ -8,8 +8,9 @@
 # To have a pattern match a literal ! as the first character, use a character class: [!]
 #
 # examples:
-cargo (build|test|check|add|remove).*
-cargo update.*
+([A-Z_]+=\w+ )*cargo (build|test|check|add|remove|run|update).*
+rm ./slop/[a-z\-_]+\.(md|jq)
+jq -f ./slop/[a-z\-_]+\.jq ./reference/api/[a-z\-_]+\.json( > ./slop/[a-z\-]+\.json)?
 !.*&&.*
 !.*[^2][^>]&[^1].*
 !.*;.*

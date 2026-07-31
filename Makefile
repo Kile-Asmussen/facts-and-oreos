@@ -14,16 +14,15 @@ clean:
 
 ./reference/api:
 	mkdir -p ./reference/api
-	wget -O api/archive.zip https://lua-api.factorio.com/latest/static/archive.zip
-	unzip api/archive.zip -d api
+	wget -O ./reference/api/archive.zip https://lua-api.factorio.com/latest/static/archive.zip
+	unzip ./reference/api/archive.zip -d api
 	find api/files -type f -name '*.html' -print0 | parallel -q -0 -j8 pandoc -w plain {} -o {.}.txt >/dev/null
 	find api/files -type f -name '*.html' -exec rm {} \;
 	find api/files -type f -name '*.css' -exec rm {} \;
 	find api/files -type f -name '*.js' -exec rm {} \;
-	rm -rf api/files/static
-	mv api/files/* api/
-	rmdir api/files
-	rm api/archive.zip
+	rm -rf ./reference/api/files/static
+	mv./reference/api/files/* ./reference/api/
+	rmdir ./reference/api/files
 
 ./reference/flua:
 	mkdir -p ./reference/flua
