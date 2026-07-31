@@ -4,8 +4,7 @@ use std::{
 };
 
 use rootcause::prelude::ResultExt as _;
-#[allow(unused_imports)]
-use crate::mod_settings::ModSettings;
+use crate::config::ProjectConfig;
 
 pub type Result<T> = rootcause::Result<T, Error>;
 
@@ -19,7 +18,7 @@ pub enum Error {
 impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Error::BinaryNotFound => write!(f, "Factorio binary not found; set FACTORIO_BIN or configure .factorio/project.toml"),
+            Error::BinaryNotFound => write!(f, "Factorio binary not found; set `factorio-bin` in .facts-and-oreos.toml or set the FACTORIO_BIN env var"),
             Error::Io => write!(f, "I/O error"),
             Error::NonZeroExit { code, stderr } => {
                 write!(f, "Factorio exited with code {code:?}")?;
@@ -41,6 +40,16 @@ pub struct FactorioInvoker {
 }
 
 impl FactorioInvoker {
+    /// Locate the Factorio binary from `ProjectConfig`, falling back to `FACTORIO_BIN` env var.
+    pub fn from_config(cfg: &ProjectConfig) -> Result<Self> {
+        let binary = cfg
+            .factorio_bin
+            .clone()
+            .or_else(|| std::env::var("FACTORIO_BIN").ok().map(PathBuf::from))
+            .ok_or_else(|| rootcause::report!(Error::BinaryNotFound))?;
+        Self::from_binary(binary)
+    }
+
     /// Locate the Factorio binary. Checks `FACTORIO_BIN` env var first,
     /// then `.factorio/project.toml` in the project root (not yet implemented).
     pub fn from_env(project_root: &Path) -> Result<Self> {
@@ -48,6 +57,10 @@ impl FactorioInvoker {
             .map(PathBuf::from)
             .or_else(|_| find_binary_from_project(project_root))
             .map_err(|_| rootcause::report!(Error::BinaryNotFound))?;
+        Self::from_binary(binary)
+    }
+
+    fn from_binary(binary: PathBuf) -> Result<Self> {
 
         if !binary.exists() {
             return Err(rootcause::report!(Error::BinaryNotFound));
@@ -72,8 +85,8 @@ impl FactorioInvoker {
 
     /// Run Factorio with `--dump-data` against the given mods directory.
     /// Returns the path to the written `data-raw-dump.json`.
-    pub fn dump_data(&self, mods_dir: &Path) -> Result<PathBuf> {
-        let tmp = self.make_isolated_env(mods_dir)?;
+    pub fn dump_data(&self, mods_dir: &Path, mod_settings_src: &Path) -> Result<PathBuf> {
+        let tmp = self.make_isolated_env(mods_dir, mod_settings_src)?;
         let output = self.run(&tmp, &["--dump-data"])?;
         check_exit(&output)?;
 
@@ -97,17 +110,18 @@ impl FactorioInvoker {
     pub fn run_headless(
         &self,
         mods_dir: &Path,
+        mod_settings_src: &Path,
         save: Option<&Path>,
         until_tick: u64,
     ) -> Result<RunOutput> {
-        let tmp = self.make_isolated_env(mods_dir)?;
+        let tmp = self.make_isolated_env(mods_dir, mod_settings_src)?;
 
         let until = until_tick.to_string();
         let args: Vec<&str> = if let Some(save_path) = save {
             let save_str = save_path.to_str().unwrap_or("");
             vec!["--load-game", save_str, "--until-tick", &until]
         } else {
-            vec!["--load-scenario", "facts-and-oreos/empty", "--until-tick", &until]
+            vec!["--load-scenario", "facts-and-oreos-helper-mod/empty", "--until-tick", &until]
         };
 
         let output = self.run(&tmp, &args)?;
@@ -124,11 +138,11 @@ impl FactorioInvoker {
 
     /// Run `--dump-data` with the `facts-and-oreos` mod active, then parse
     /// the `defines` table out of script-output written by the on_init hook.
-    pub fn dump_defines(&self, mods_dir: &Path) -> Result<PathBuf> {
-        let tmp = self.make_isolated_env(mods_dir)?;
+    pub fn dump_defines(&self, mods_dir: &Path, mod_settings_src: &Path) -> Result<PathBuf> {
+        let tmp = self.make_isolated_env(mods_dir, mod_settings_src)?;
         // Use the minimal scenario which fires script.on_init to write defines.
         let output = self.run(&tmp, &[
-            "--load-scenario", "facts-and-oreos/dump-defines",
+            "--load-scenario", "facts-and-oreos-helper-mod/dump-defines",
             "--until-tick", "1",
         ])?;
         let stdout = String::from_utf8_lossy(&output.stdout).into_owned();
@@ -150,18 +164,16 @@ impl FactorioInvoker {
         Ok(dest)
     }
 
-    fn make_isolated_env(&self, mods_dir: &Path) -> Result<IsolatedEnv> {
+    fn make_isolated_env(&self, mods_dir: &Path, mod_settings_src: &Path) -> Result<IsolatedEnv> {
         let tmp_dir = std::env::temp_dir().join(format!("facts-and-oreos-{}", std::process::id()));
         std::fs::create_dir_all(&tmp_dir).context(Error::Io)?;
 
         let write_data = tmp_dir.clone();
         std::fs::create_dir_all(write_data.join("mods")).context(Error::Io)?;
 
-        // Write minimal mod-settings.dat.
-        let settings = ModSettings::empty((2, 1, 12, 0));
-        let settings_path = write_data.join("mods").join("mod-settings.dat");
-        let bytes = settings.to_bytes().map_err(|_| rootcause::report!(Error::Io))?;
-        std::fs::write(&settings_path, &bytes).context(Error::Io)?;
+        // Copy the profile's mod-settings.dat into the temp write-data dir.
+        let settings_dest = write_data.join("mods").join("mod-settings.dat");
+        std::fs::copy(mod_settings_src, &settings_dest).context(Error::Io)?;
 
         // Write config.ini pointing at our read-data and write-data.
         let config_path = tmp_dir.join("config.ini");

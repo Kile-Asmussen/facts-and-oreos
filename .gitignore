@@ -11,3 +11,5 @@
 .claude/fishing.glob-exclude.local.txt
 .claude/fishing.log
 .claude/fishing.log~
+
+**/player-data.json

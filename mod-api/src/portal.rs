@@ -79,6 +79,40 @@ impl ModPortalClient {
         }
     }
 
+    /// Download a mod directly by URL (no extra `get_mod_spec` call).
+    /// `url` is the path component from the portal API (e.g. `/download/...`).
+    /// Writes the file to `dest` (full path including filename).
+    pub async fn download_mod_by_url(
+        &self,
+        url: &str,
+        _file_name: &str,
+        token: &PlayerData,
+        dest: &Path,
+    ) -> Result<PathBuf> {
+        let full_url = if url.starts_with("http") {
+            url.to_owned()
+        } else {
+            format!("{}{url}", self.mod_api_base)
+        };
+        let params = [
+            ("username", &token.service_username),
+            ("token", &token.service_token),
+        ];
+        let response = self
+            .client
+            .get(&full_url)
+            .query(&params)
+            .send()
+            .await
+            .context(Error::Http)?
+            .error_for_status()
+            .context(Error::Http)?;
+
+        let bytes = response.bytes().await.context(Error::Http)?;
+        std::fs::write(dest, &bytes).context(Error::Io)?;
+        Ok(dest.to_path_buf())
+    }
+
     /// Download a specific mod version to `directory`. Returns the path to the zip file.
     pub async fn download_mod(
         &self,

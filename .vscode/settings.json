@@ -20,5 +20,5 @@
         "fishing.txt": "fishing.*.txt, fishing.log"
     },
     "explorer.sortOrder": "mixed",
-    "rust-analyzer.files.exclude": ["./mlua", "./ftools"]
+    "rust-analyzer.files.exclude": ["./mlua", "./ftools"]    
 }

@@ -1,0 +1,1 @@
+-- Minimal headless scenario: does nothing, lets --until-tick handle shutdown.

@@ -1,0 +1,8 @@
+{
+  "name": "facts-and-oreos-helper-mod",
+  "version": "0.0.1",
+  "title": "Helper mod for the Facts And Oreos testing pipeline",
+  "author": "Kashmira Qeel",
+  "factorio_version": "2.1",
+  "dependencies": ["base"]
+}

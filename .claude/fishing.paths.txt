@@ -10,3 +10,5 @@
 #
 # examples:
 **
+!**/player-data.json
+!/**/player-data.json

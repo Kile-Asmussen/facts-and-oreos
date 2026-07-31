@@ -1,6 +1,10 @@
+pub mod check_token;
+pub mod config;
 pub mod downloader;
+pub mod helper_mod;
 pub mod invoker;
 pub mod mod_settings;
+pub mod profile;
 
 #[cfg(test)]
 mod tests {
